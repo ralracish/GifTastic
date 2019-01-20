@@ -37,8 +37,6 @@ $(document).ready(function () {
         // Adding city from the textbox to our array
         cities.push(city);
         renderButtons()
-    });
-
     $(".city-btn").on("click", function (event) {
         var city = $(this).attr("data-name");
         var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
@@ -48,15 +46,36 @@ $(document).ready(function () {
             method: "GET"
         }).then(function (response) {
             response.data.forEach(element => {
-                var gifImg = $("<img width='150' height= '150'>");
+                var gifImg = $("<img height= '150'>");
                 gifImg.addClass("gif")
-                gifImg.attr("src", element.images.fixed_width_still.url);
+                gifImg.attr("src", element.images.fixed_height_still.url);
                 gifImg.attr("data-state", "still")
-                gifImg.attr("data-still", element.images.fixed_width_still.url)
+                gifImg.attr("data-still", element.images.fixed_height_still.url)
                 gifImg.attr("data-animate", element.images.original.url)
-                // gifImg.attr()
-                // gifImg.attr("alt", "gif-image");
-                // string interpolation:  $("#cities-view").prepend( "<p>Rating: " + element.rating.toUpperCase() + "</p>"  )
+                // string interpolation: 
+                $("#cities-view").prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
+                $("#cities-view").prepend(gifImg);
+            });
+            console.log(response);
+            })
+        })
+    });
+    $(".city-btn").on("click", function (event) {
+        var city = $(this).attr("data-name");
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
+        // // Creating an AJAX call for the specific city button being clicked
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            response.data.forEach(element => {
+                var gifImg = $("<img height= '150'>");
+                gifImg.addClass("gif")
+                gifImg.attr("src", element.images.fixed_height_still.url);
+                gifImg.attr("data-state", "still")
+                gifImg.attr("data-still", element.images.fixed_height_still.url)
+                gifImg.attr("data-animate", element.images.original.url)
+                // string interpolation: 
                 $("#cities-view").prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
                 $("#cities-view").prepend(gifImg);
             });
