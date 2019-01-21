@@ -4,6 +4,7 @@ $(document).ready(function () {
     var cities = ["Vienna", "San Francisco", "Toronto", "Ho Chi Minh City", "Dallas", "Machu Picchu", "Nairobi", "Tokyo",
         "Seattle", "Mexico City", "Barcelona", "Hong Kong", "Rome", "Cairo", "Buenos Aires", "Moscow", "Cape Town", "Sydney", "Lima", "Montreal",
         "Luanda", "New York", "Venice", "Beijing", "New Dehli", "Bangkok", "Vancouver", "Los Angeles", "Caracas", "Lagos", "Cancun"]
+
     function renderButtons() {
 
         //Deleting the cities prior to adding new cities
@@ -28,75 +29,86 @@ $(document).ready(function () {
     }
     renderButtons()
 
-    //This function handles events where a city button is clicked
+    // //This function handles events where a city button is clicked
     $("#add-city").on("click", function (event) {
         event.preventDefault();
-        // This line grabs the input from the textbox
+    //     // This line grabs the input from the textbox
         var city = $("#city-input").val().trim();
 
-        // Adding city from the textbox to our array
+    //     // Adding city from the textbox to our array
         cities.push(city);
         renderButtons()
-    $(".city-btn").on("click", function (event) {
-        var city = $(this).attr("data-name");
-        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
-        // // Creating an AJAX call for the specific city button being clicked
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        }).then(function (response) {
-            response.data.forEach(element => {
-                var gifImg = $("<img height= '150'>");
-                gifImg.addClass("gif")
-                gifImg.attr("src", element.images.fixed_height_still.url);
-                gifImg.attr("data-state", "still")
-                gifImg.attr("data-still", element.images.fixed_height_still.url)
-                gifImg.attr("data-animate", element.images.original.url)
-                // string interpolation: 
-                $("#cities-view").prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
-                $("#cities-view").prepend(gifImg);
+        console.log("city")
+
+        $(".city-btn").on("click", function (event) {
+            $("#cities-view").empty();
+            var city = $(this).attr("data-name");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
+            //     // // Creating an AJAX call for the specific city button being clicked
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function (response) {
+                response.data.forEach(element => {
+                    var gifWrapper = $("<div class='gif-wrapper'>");
+                    var gifImg = $("<img height= '200' width= '200'>");
+                    gifImg.addClass("gif")
+                    gifImg.attr("src", element.images.fixed_height_still.url);
+                    gifImg.attr("data-state", "still")
+                    gifImg.attr("data-still", element.images.fixed_height_still.url)
+                    gifImg.attr("data-animate", element.images.original.url)
+                    // string interpolation: 
+                    // Prepend to new wrapper first and then add wrapper to #cities-view
+				    $(gifWrapper).prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
+				    $(gifWrapper).prepend(gifImg);
+                    $("#cities-view").prepend(gifWrapper);  
+                });
+                console.log(response);
+    
             });
-            console.log(response);
-            })
-        })
-    });
-    $(".city-btn").on("click", function (event) {
-        var city = $(this).attr("data-name");
-        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
-        // // Creating an AJAX call for the specific city button being clicked
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        }).then(function (response) {
-            response.data.forEach(element => {
-                var gifImg = $("<img height= '150'>");
-                gifImg.addClass("gif")
-                gifImg.attr("src", element.images.fixed_height_still.url);
-                gifImg.attr("data-state", "still")
-                gifImg.attr("data-still", element.images.fixed_height_still.url)
-                gifImg.attr("data-animate", element.images.original.url)
-                // string interpolation: 
-                $("#cities-view").prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
-                $("#cities-view").prepend(gifImg);
-            });
-            console.log(response);
         })
     })
+    $(".city-btn").on("click", function (event) {
+        $("#cities-view").empty();
+        var city = $(this).attr("data-name");
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + city + "&api_key=JMZ8KfJzhZWbdprATa1oBMjhntYXGJLK&limit=10&rating=G&lang=en"
+        //     // // Creating an AJAX call for the specific city button being clicked
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            response.data.forEach(element => {
+                var gifWrapper = $("<div class='gif-wrapper'>");
+                var gifImg = $("<img height= '200' width= '200'>");
+                gifImg.addClass("gif")
+                gifImg.attr("src", element.images.fixed_height_still.url);
+                gifImg.attr("data-state", "still")
+                gifImg.attr("data-still", element.images.fixed_height_still.url)
+                gifImg.attr("data-animate", element.images.original.url)
+                // string interpolation: 
+                // Prepend to new wrapper first and then add wrapper to #cities-view
+                $(gifWrapper).prepend(`<p>Rating: ${element.rating.toUpperCase()}</p>`);
+                $(gifWrapper).prepend(gifImg);
+                $("#cities-view").prepend(gifWrapper);  
+            });
+            console.log(response)
+        });
 
-    //making the click on the gif animate and still on clicks 
-    $(document).on("click", ".gif", function () {
-        //The attr jQuery method allows us to get or set the value of any attribute on our HTML element
-        var state = $(this).attr("data-state");
-        //If the clicked image's state is still, update its src attribute to what its data-animate value is.
-        //Then, set the image's data-state to animate
-        //Else set src to the data-still value
-        if (state === "still") {
-            $(this).attr("src", $(this).attr("data-animate"));
-            $(this).attr("data-state", "animate");
-        } else {
-            $(this).attr("src", $(this).attr("data-still"));
-            $(this).attr("data-state", "still");
-        }
-        console.log("gif clicked")
+        //making the click on the gif animate and still on clicks 
+        $(document).on("click", ".gif", function () {
+                //The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+            var state = $(this).attr("data-state");
+                //If the clicked image's state is still, update its src attribute to what its data-animate value is.
+                //Then, set the image's data-state to animate
+                //Else set src to the data-still value
+            if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+            }
+            console.log("gif clicked")
+        });
     });
 })
